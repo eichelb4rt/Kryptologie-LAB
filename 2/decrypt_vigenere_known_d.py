@@ -10,13 +10,13 @@ def main():
     print(crack_vigenere(input.read(), language, m, keyspace, int(sys.argv[2])))
     input.close()
 
-def crack_vigenere(text: str, language: list, m: int, keyspace: list, d: int, only_key = 0):
+def crack_vigenere(text: str, language: list, m: int, keyspace: list, d: int, only_key = False):
     # divide text into d columns
     columns_crypt = [""]*d
     for i in range(0, len(text)):
         columns_crypt[i%d] += text[i]
     # return the clear text
-    if only_key == 0:
+    if not only_key:
         columns_clear_text = [""]*d
         for i in range(0,d):
             columns_clear_text[i] = crack_additive(columns_crypt[i], language, m, keyspace)
@@ -26,9 +26,9 @@ def crack_vigenere(text: str, language: list, m: int, keyspace: list, d: int, on
         return clear_text
     # return only the keys
     else:
-        return [crack_additive(columns_crypt[i], language, m, keyspace, 1) for i in range(0,d)]
+        return [crack_additive(columns_crypt[i], language, m, keyspace, True) for i in range(0,d)]
 
-def crack_additive(text: str, language: list, m:int, keyspace: list, only_key = 0):
+def crack_additive(text: str, language: list, m:int, keyspace: list, only_key = False):
     # initiate start values for the search for the best fitting key
     max_key = keyspace[0]
     min_delta_ep = 2    # minimum normed difference between the eps: empirical probability vectors have a maximum length of 1, therefore max difference is 2 (sum of eps is <= 1, -> sum of squares is also <= 1, -> sqrt of sum of squares is <= 1)
@@ -43,7 +43,7 @@ def crack_additive(text: str, language: list, m:int, keyspace: list, only_key = 
         if norm(delta_ep) < min_delta_ep:
             min_delta_ep = norm(delta_ep)
             max_key = key
-    if only_key == 0:   # return the clear text
+    if not only_key:   # return the clear text
         return decrypt_additive(text, max_key, m)
     else:   # return only the key
         return max_key

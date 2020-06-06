@@ -14,4 +14,5 @@ def rauheitsgrad(text):
         sum += (count/len(text))**2   # sum(p(a)^2) - 1/|A| (a in A)
     return sum
 
-main()
+if __name__ == "__main__":
+    main()
