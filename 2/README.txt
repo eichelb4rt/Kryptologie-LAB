@@ -27,3 +27,5 @@ Example: ./vigenere.py -d files/encrypted-lorem-5.txt files/lorem.txt 128
 
 <in>, <m>: same as in encryption (1 above)
 <lang>: text file that will be used as a reference for the empirical probability of each character
+##############################################
+Thank you for reading the full README.txt - have fun using the tool!
