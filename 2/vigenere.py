@@ -16,7 +16,7 @@ def main():
     keyspace = range(1,m)
     d = find_d(text)
     # (hacker voice): "I'm in!"
-    print(crack_vigenere(text, language, m, keyspace, d))
+    print(crack_vigenere(text, language, m, keyspace, d, True))
 
 if __name__ == "__main__":
     main()
