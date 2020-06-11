@@ -12,10 +12,11 @@ Dependencies:
 -decrypt_vigenere_known_d.py
 -find_keylength.py
 ##############################################
-Usage: ./vigenere.py <in> <lang> <m>
+Usage: ./vigenere.py [-k] <in> <lang> <m>
 Example: ./vigenere.py files/encrypted-lorem-5.txt files/lorem.txt 128
 
 <in>, <m>: same as in encryption (1 above)
 <lang>: text file that will be used as a reference for the empirical probability of each character
+[-k]: if you only want the key
 ##############################################
 Thank you for reading the full README.txt - have fun using the tool!

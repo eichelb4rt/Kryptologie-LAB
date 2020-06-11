@@ -26,7 +26,10 @@ def crack_vigenere(text: str, language: list, m: int, keyspace: list, d: int, on
         return clear_text
     # return only the keys
     else:
-        return [crack_additive(columns_crypt[i], language, m, keyspace, True) for i in range(0,d)]
+        key = ""
+        for i in range(0,d):
+            key += crack_additive(columns_crypt[i], language, m, keyspace, True)
+        return key
 
 def crack_additive(text: str, language: list, m:int, keyspace: list, only_key = False):
     # initiate start values for the search for the best fitting key
@@ -46,7 +49,7 @@ def crack_additive(text: str, language: list, m:int, keyspace: list, only_key = 
     if not only_key:   # return the clear text
         return decrypt_additive(text, max_key, m)
     else:   # return only the key
-        return max_key
+        return chr(max_key)
 
 def norm(vector: list):
     sum = 0
