@@ -45,13 +45,13 @@ def main():
     # read key
     with open(args.input, "r") as f:
         key = int(f.read())
-    # write generated keys to output
+    # generate keys and make em hexa if the user wants to
     generated_keys = gen_keys(key, args.keylength, permutation)
+    if args.binary:
+        generated_keys = [key.to_bytes(8, 'big').hex() for key in generated_keys]
+    # write generated keys to output
     with open(args.output, "w") as f:
-        if args.binary:
-            f.write(str([key.to_bytes(8, 'big').hex() for key in generated_keys]))
-        else:
-            f.write(str(generated_keys))
+        f.write(str(generated_keys))
 
 def gen_keys(key: int, keylength: int, permutation: List[int]):
     keys = []
