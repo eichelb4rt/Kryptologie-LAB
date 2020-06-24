@@ -33,19 +33,15 @@ def main():
     )
     args = parser.parse_args()
     # read permutation
-    permutation_file = open(args.permutation, "r")
-    permutation = permutation_file.read()
-    permutation_file.close()
-    permutation = list(map(int, permutation[1:-2].split(", ")))
+    with open(args.permutation, "r") as f:
+        permutation = list(map(int, f.read()[1:-2].split(", ")))    # strip [*] and the line break
     # read key
-    key_file = open(args.input, "r")
-    key = int(key_file.read())
-    key_file.close()
+    with open(args.input, "r") as f:
+        key = int(f.read())
     # write generated keys to output
     generated_keys = gen_keys(key, args.keylength, permutation)
-    output_file = open(args.output, "w")
-    output_file.write(str(generated_keys))
-    output_file.close()
+    with open(args.output, "w") as f:
+        f.write(str(generated_keys))
 
 def gen_keys(key: int, keylength: int, permutation: List[int]):
     keys = []
@@ -73,9 +69,8 @@ def permute(key: int, permutation: List[int]):  # returns a key permuted with a 
 
 def split_key(key: int, keylength: int):    # split the key into a high and a low part
     bitmask_low = 2**(keylength//2)-1 # this is ok because the keylength is supposed to be even
-    bitmask_high = bitmask_low << (keylength//2) # same here
     key_low = key & bitmask_low
-    key_high = (key & bitmask_high) >> (keylength//2)
+    key_high = key >> (keylength//2)
     return key_high, key_low
 
 if __name__ == "__main__":
