@@ -31,6 +31,13 @@ def main():
         default = 64,
         help = 'The length of the key (default: 64)'
     )
+    parser.add_argument(
+        '--hex',
+        dest = 'binary',
+        action = 'store_true',
+        default = 'false',
+        help = 'store the keys in hexadecimal numbers instead of ints'
+    )
     args = parser.parse_args()
     # read permutation
     with open(args.permutation, "r") as f:
@@ -41,7 +48,10 @@ def main():
     # write generated keys to output
     generated_keys = gen_keys(key, args.keylength, permutation)
     with open(args.output, "w") as f:
-        f.write(str(generated_keys))
+        if args.binary:
+            f.write(str([key.to_bytes(8, 'big').hex() for key in generated_keys]))
+        else:
+            f.write(str(generated_keys))
 
 def gen_keys(key: int, keylength: int, permutation: List[int]):
     keys = []
