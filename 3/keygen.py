@@ -44,7 +44,7 @@ def main():
         permutation = list(map(int, f.read()[1:-2].split(", ")))    # strip [*] and the line break
     # read key
     with open(args.input, "r") as f:
-        key = int(f.read())
+        key = int(f.read(), 16)
     # generate keys and make em hexa if the user wants to
     generated_keys = gen_keys(key, args.keylength, permutation)
     if args.binary:
