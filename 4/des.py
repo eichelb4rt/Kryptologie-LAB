@@ -65,50 +65,42 @@ def main():
         key = int(f.read(), 16)
     # generate keys
     generated_keys = gen_keys(key, args.blocklength//2, permutation)
+    if args.decrypt:
+        generated_keys.reverse()
     # read s-box
     with open(args.s_box, "r") as f:
-        s_box = [int(byte, 16) for byte in f.read()[1:-2].split(", ")]   # strip [*] and the line break
-    # read input
-    input = []
-    with open(args.input, "rb") as f:
-        while block := f.read(args.blocklength//8): # we need to read 2*keylength bits, so we need to 
-            input.append(int(block) << (args.blocklength - len(block)))  # pad the block if it's not full (fill the right side with 0)
-    print(input)
-    # apply DES encryption or decryption
-    if args.decrypt:
-        #decrypted_bytes = decrypt(input, )
-        pass
-    else:
-        #encrypt
-        pass
-    # write generated keys to output
-    #with open(args.output, "w") as f:
-    #    f.write(str(generated_keys))
-
-def encrypt(block: int, keys: List[int], s_box: List[int], blocklength: int):
-    pass
+        s_box = [int(byte[1:-1], 16) for byte in f.read()[1:-2].split(", ")]   # strip [*] and the line break, then strip the single quotes from every single entry
+    # now we can process each block on its own
+    with open(args.input, "rb") as f_in, open(args.output, "wb") as f_out:
+        while block := f_in.read(args.blocklength//8): # read the blocks
+            block = int.from_bytes(block, 'big') << (args.blocklength - len(block)*8)   # pad the block if it's not full (fill the right side with 0) (len(block) is in bytes)
+            output = encrypt_block(block, generated_keys, s_box, args.blocklength)  # encrypt the block
+            f_out.write(output.to_bytes(args.blocklength//8, 'big'))    # write it in binary
 
 def encrypt_block(block: int, keys: List[int], s_box: List[int], blocklength: int):
-    R, L = split_key(block, blocklength)  # use the split_key function from key_gen: turns a (keylength) Integer into 2 (keylength//2) Integers.
+    L, R = split_key(block, blocklength)  # use the split_key function from key_gen: turns a (keylength) Integer into 2 (keylength//2) Integers.
     for i in range(16):
         L, R = encryption_step(L, R, keys[i], s_box, blocklength)
     L, R = R, L # swap em one last time
+    return (L << blocklength//2) | R
 
 def encryption_step(L: int, R: int, key: int, s_box: List[int], blocklength: int):
     next_L = R
     next_R = r_function(R, key, s_box, blocklength) ^ L
     return next_L, next_R
 
-def r_function(R: int, key: int, s_box: List[int], blocklength: int):
+def r_function(R: int, key: int, s_box: List[int], blocklength: int):   # function that is applied to the right side of the block
     R = R ^ key # xor the R and the key
-    s_box_input = make_byte_array(R, blocklength//16)  # split up R into a byte array of length (blocklength//2)//8 so we can properly apply the S-box
-    s_box_output = [s_box[byte] for byte in s_box_input]    # apply the S-box
-    return s_box_output
-
+    s_box_input = make_byte_array(R, blocklength // 16)  # split up R into a byte array of length (blocklength//2)//8 so we can properly apply the S-box
+    substituted_R = 0   # prepare it for logical or
+    for i, byte in enumerate(s_box_input):
+        #print(f'byte: {byte}\ts: {s_box[byte]}\trs: {invert_array(s_box)[s_box[byte]]}')
+        substituted_R |= s_box[byte] << ((blocklength//16 - 1 - i) * 8)    # apply the s_box on every byte
+    return substituted_R
 
 def make_byte_array(num: int, length: int): # make a byte array out of the R-nod for the s-box
-    mask = 2**8 - 1 # mask for 1 byte
-    byte_array = [(num & (mask << (i*8))) >> (i*8) for i in range(length)]  # apply the mask for the i-th byte and shift it to the right again
+    byte_mask = 2**8 - 1 # mask for 1 byte
+    byte_array = [(num >> (((length-1) - i)*8)) & byte_mask for i in range(length)]  # shitft the i-th byte (counted from the left) to the right and apply the mask
     return byte_array
 
 if __name__ == "__main__":

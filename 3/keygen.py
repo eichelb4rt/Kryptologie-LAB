@@ -73,8 +73,8 @@ def cycle_shift(key: int, keylength: int, n: int): # cyclic shift left of key wi
 def permute(key: int, permutation: List[int]):  # returns a key permuted with a given permutation
     permuted = 0
     for index, permuted_index in enumerate(permutation):
-        key_bit = (key >> index) & 1    # get a bit of the key at the index index
-        permuted = permuted | key_bit << permuted_index # set the permutated key at the index permuted_index to the bit of the key at the index index
+        key_bit = (key >> (63 - index)) & 1    # get a bit of the key at the index index
+        permuted = permuted | key_bit << (63 - permuted_index) # set the permutated key at the index permuted_index to the bit of the key at the index index
     return permuted
 
 def split_key(key: int, keylength: int):    # split the key into a high and a low part
