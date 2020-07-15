@@ -39,7 +39,7 @@ def main():
         metavar = 's_box',
         dest = 's_box',
         default = 's-box.txt',
-        help = 'File that the s-box is read from (default: s-box.txt)'
+        help = 'File that the s-box is read from (hexadecimal) (default: s-box.txt)'
     )
     parser.add_argument(
         '-p',
